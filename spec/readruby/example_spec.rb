@@ -1,4 +1,4 @@
-describe ReadRuby::Example, "#new" do
+describe ReadRuby::Example, ".new" do
   it "accepts a String argument" do
     lambda { ReadRuby::Example.new("1 + 2 #=> 3") }.should_not raise_error
   end
