@@ -12,11 +12,11 @@ module ReadRuby
     end
 
     def signature
-      Signature.new(description).signature
+      signature_object.signature
     end
 
     def returns
-      Signature.new(description).returns
+      signature_object.returns
     end
 
     private
@@ -26,6 +26,10 @@ module ReadRuby
       # where .singleton_methods returned Strings, and 1.9, where it returns
       # Symbols 
       self.object.singleton_methods.any? {|m| m.to_sym == self.method }
+    end
+
+    def signature_object
+      @signature_obj ||= Signature.new(self.description)
     end
   end
 end
