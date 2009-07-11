@@ -9,7 +9,7 @@ module ReadRuby
     end
 
     def html
-      self.class.markdown.new(self.text).to_html
+      self.class.markdown.new(self.text).to_html.chomp
     end
 
     def self.markdown

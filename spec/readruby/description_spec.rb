@@ -30,7 +30,7 @@ end
 
 describe ReadRuby::Description, "#html" do
   it "interprets the constructor argument as Markdown and returns it as HTML" do
-    ReadRuby::Description.new('*text*').html.should == "<p><em>text</em></p>\n"
+    ReadRuby::Description.new('*text*').html.should == "<p><em>text</em></p>"
   end
 
   it "returns a String" do
