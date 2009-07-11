@@ -1,7 +1,7 @@
 module ReadRuby
   class Invocation
     
-    attr_accessor :object, :method, :description
+    attr_accessor :object, :method
 
     def initialize(object, method, description)
       @object, @method, @description = object, method, description
@@ -9,6 +9,10 @@ module ReadRuby
       raise ArgumentError unless @method.is_a?(Symbol)
       raise ArgumentError unless @description.is_a?(String)
       raise NoMethodError, "#{object}##{method}" unless valid_method?
+    end
+
+    def description
+      Description.new(@description)
     end
 
     def signature
@@ -29,7 +33,7 @@ module ReadRuby
     end
 
     def signature_object
-      @signature_obj ||= Signature.new(self.description)
+      @signature_obj ||= Signature.new(self.description.text)
     end
   end
 end

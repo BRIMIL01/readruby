@@ -94,12 +94,14 @@ describe ReadRuby::Invocation, "#signature" do
 end
 
 describe ReadRuby::Invocation, "#idescription" do
-  it "returns a String" do
+  it "returns a Description object" do
     ReadRuby::Invocation.new(Array, :first, 'text').description.should 
-      be_an_instance_of(String)
+      be_an_instance_of(Description)
   end
 
-  it "returns the last argument passed to the constructor" do
-    ReadRuby::Invocation.new(Array, :first, 'text').description.should == 'text'
+  it "returns the right Description object" do
+    ReadRuby::Invocation.new(
+      Array, :first, 'text'
+    ).description.text.should == 'text'
   end
 end
