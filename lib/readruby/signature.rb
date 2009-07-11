@@ -21,7 +21,7 @@ module ReadRuby
 
     def returns
       match = self.description.split(/\n/)[0][SIGNATURE_REX, 1] or return []
-      match.scan(/#{CLASS_PAT}/).map do |type|
+      match.scan(/#{CLASS_PAT}/o).map do |type|
         type = type.first
         begin
           Object.const_get(type.to_sym)
