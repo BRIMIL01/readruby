@@ -12,7 +12,7 @@ module ReadRuby
     end
 
     def description
-      Description.new(@description)
+      Description.new(signature_object.description_sans_metadata)
     end
 
     def signature
@@ -37,7 +37,7 @@ module ReadRuby
     end
 
     def signature_object
-      @signature_obj ||= Signature.new(self.description.text)
+      @signature_obj ||= Signature.new(@description)
     end
   end
 end

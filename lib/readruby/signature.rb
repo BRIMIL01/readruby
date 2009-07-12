@@ -59,5 +59,9 @@ module ReadRuby
       str << self.returns_str
       str
     end
+
+    def description_sans_metadata
+      self.description.split(/\n/).reject {|l| l =~ SIGNATURE_REX }.join("\n")
+    end
   end
 end
