@@ -13,6 +13,20 @@ module ReadRuby
       @@invocations ||= []
     end
 
+    def self.process_files(files)
+      reset!
+      files.each do |file|
+        process_file file
+      end
+      display_all
+    end
+
+    def self.display_all
+      fetch.each do |invocation|
+        puts invocation
+      end
+    end
+
     def self.process_file(file)
       @env = Object.new
       @env.extend(ReadRuby)
