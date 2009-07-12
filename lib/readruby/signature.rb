@@ -40,5 +40,24 @@ module ReadRuby
       end
     end
 
+    def signature_str
+      self.signature.map do |element|
+        element.size == 2 ? element.join(' ') : element.first
+      end.join(', ')
+    end
+
+    def returns_str
+      self.returns.join(' or ')
+    end
+
+    def format(object, method)
+      raise ArgumentError unless object.is_a?(Class)
+      raise ArgumentError unless method.is_a?(Symbol)
+      str = "    #{object}##{method}("
+      str << self.signature_str
+      str << ') => '
+      str << self.returns_str
+      str
+    end
   end
 end
