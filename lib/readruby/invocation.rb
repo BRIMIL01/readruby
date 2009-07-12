@@ -23,6 +23,10 @@ module ReadRuby
       signature_object.returns
     end
 
+    def to_s
+      signature_object.format(self.object, self.method) + self.description.text
+    end
+
     private
     def valid_method?
       self.object.method_defined?(self.method) ||

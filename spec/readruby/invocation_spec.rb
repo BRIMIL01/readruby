@@ -105,3 +105,45 @@ describe ReadRuby::Invocation, "#idescription" do
     ).description.text.should == 'text'
   end
 end
+
+describe ReadRuby::Invocation, "#to_s" do
+  it "returns a String" do
+    ReadRuby::Invocation.new(String, :size, '    () => Fixnum').
+      to_s.should be_an_instance_of(String)
+  end
+
+  it "includes the Class name" do
+    ReadRuby::Invocation.new(
+      String, :size, '    () => Fixnum'
+    ).to_s.should =~ /\WString\W/
+  end 
+
+  it "includes the method name" do
+    ReadRuby::Invocation.new(
+      String, :size, '    () => Fixnum'
+    ).to_s.should =~ /\Wsize\W/
+  end
+
+ it "includes the signature" do
+    ReadRuby::Invocation.new(
+      String, :insert, '    (Fixnum index, String other) => String'
+    ).to_s.should =~ /\(Fixnum index, String other\)/
+ end
+
+ it "includes the return value" do
+    ReadRuby::Invocation.new(
+      String, :insert, '    (Fixnum index, String other) => String'
+    ).to_s.should =~ / => String/
+ end
+
+ it "includes the description" do
+    invoc = ReadRuby::Invocation.new(
+      String, :insert, <<-text)
+        (Fixnum index, String other) => String
+
+    Inserts _other_ before the character at _index_.
+    text
+
+    invoc.to_s.should =~ / _other_ before the character /
+ end
+end
