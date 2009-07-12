@@ -8,8 +8,11 @@ class Object
     raise ArgumentError unless @methods.all? {|m| m.is_a?(Symbol)}
     raise ArgumentError unless @methods.size > 0
     raise ArgumentError unless @methods == @methods.uniq
-    @methods.map do |method|
-      ReadRuby::Invocation.new(@object, method, @description)
+    @methods.map! do |method|
+      invoc = ReadRuby::Invocation.new(@object, method, @description)
+      ReadRuby::Runner.store invoc
+      invoc
     end
+    @methods
   end
 end
