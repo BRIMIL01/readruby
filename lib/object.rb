@@ -1,4 +1,11 @@
 class Object
+  MSPEC_METHODS = %w{it describe it_behaves_like quarantine! as_superuser
+                     as_user ruby_version_is platform_is ruby_bug}
+  MSPEC_METHODS.each do |method|
+    next if Object.respond_to?(method.to_sym)
+    Object.send(:define_method, method.to_sym) {|*a|}
+  end
+
   def doc(object, *args)
     @object = object
     raise ArgumentError unless @object.is_a?(Class)

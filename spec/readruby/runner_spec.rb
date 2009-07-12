@@ -33,4 +33,25 @@ describe ReadRuby::Runner, ".process_file" do
     ReadRuby::Runner.fetch[1].method.should == :slice
     ReadRuby::Runner.fetch[2].method.should == :[]
   end
+
+  it "ignores `describe` blocks" do
+    lambda do
+      ReadRuby::Runner.process_file(fixture('simple_with_describe.rb'))
+    end.should_not raise_error 
+    ReadRuby::Runner.fetch[0].method.should == :size
+  end
+
+  it "ignores `describe` blocks containing `it` blocks" do
+    lambda do
+      ReadRuby::Runner.process_file(fixture('simple_with_describe_it.rb'))
+    end.should_not raise_error 
+    ReadRuby::Runner.fetch[0].method.should == :size
+  end
+
+  it "ignores `ruby_version_is` blocks" do
+    lambda do
+      ReadRuby::Runner.process_file(fixture('simple_with_ruby_version_is.rb'))
+    end.should_not raise_error 
+    ReadRuby::Runner.fetch[0].method.should == :size
+  end
 end
