@@ -61,6 +61,22 @@ describe ReadRuby::Signature, "#returns" do
       returns.should == [Object, NilClass]
   end
 
+  it "accepts a return value of 'self'" do
+    ReadRuby::Signature.new('    () => self').returns.should == ['self']
+  end
+
+  it "accepts a return value of 'true'" do
+    ReadRuby::Signature.new('    () => true').returns.should == ['true']
+  end
+
+  it "accepts a return value of 'false'" do
+    ReadRuby::Signature.new('    () => false').returns.should == ['false']
+  end
+
+  it "accepts a return value of 'nil'" do
+    ReadRuby::Signature.new('    () => nil').returns.should == ['nil']
+  end
+  
   it "raises a NameError if the return type is not a valid constant" do
     lambda do
       ReadRuby::Signature.new('    () => Objectified').returns
@@ -198,6 +214,12 @@ describe ReadRuby::Signature, "#to_s" do
 
  it "includes the return value" do
    @string_slice.should =~ /String or NilClass/
+ end
+
+ it "displays a block argument after the closing parenthesis" do
+    ReadRuby::Signature.new(
+      '    (Fixnum index) { |var| } => String or NilClass'
+    ).to_s.should include(') { |var| }')
  end
 end 
 

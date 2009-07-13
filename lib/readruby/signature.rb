@@ -2,12 +2,14 @@ module ReadRuby
   class Signature
     # Matches a class name, e.g. String or NilClass
     CLASS_PAT = '([A-Z]\w+)'
+    SELF_OR_BOOL_PAT = 'self|true|false|nil'
+    RETURN_PAT = '((' + CLASS_PAT + ')|' + SELF_OR_BOOL_PAT + ')'
     VAR_PAT = '([a-z0-9_]\w+)'
     BLOCK_PAT = '\{[^\}]+\}'
     # Matches the method signature. We are intentionally vague about the
     # return type declaration because it's more readable to use #scan on the
     # captured portion than delegate both tasks to the regex
-    SIGNATURE_REX = /^\s{4}\s*\(([^\)]*)\)\s*(#{BLOCK_PAT})?\s*=> \s*(#{CLASS_PAT}.*)$/o
+    SIGNATURE_REX = /^\s{4}\s*\(([^\)]*)\)\s*(#{BLOCK_PAT})?\s*=> \s*(#{RETURN_PAT}.*)$/o
 
     def self.signature?(line)
       !!line.match(SIGNATURE_REX)
@@ -38,12 +40,16 @@ module ReadRuby
     def returns
       return @returns if defined?(@returns)
       match = self.description.split(/\n/)[0][SIGNATURE_REX, 3] or return []
-      @returns = match.scan(/#{CLASS_PAT}/o).map do |type|
+      @returns = match.scan(/#{RETURN_PAT}/o).map do |type|
         type = type.first
-        begin
-          Object.const_get(type.to_sym)
-        rescue NameError
-          raise NameError, "Invalid return type: #{type.to_sym}"
+        if type.match(/(#{SELF_OR_BOOL_PAT})/)
+          type
+        else  
+          begin
+            Object.const_get(type.to_sym)
+          rescue NameError
+            raise NameError, "Invalid return type: #{type.to_sym}"
+          end
         end
       end
     end
@@ -64,9 +70,13 @@ module ReadRuby
     end
 
     def signature_str
-      self.signature.map do |element|
+      block = signature.pop.first if signature.last.first.is_a?(String)
+      sig = self.signature.map do |element|
         element.size == 2 ? element.join(' ') : element.first
-      end.join(', ')
+      end
+     sig = '(' + sig.join(', ') +')'
+     sig << " #{block}" if block 
+     sig
     end
 
     def returns_str
@@ -74,7 +84,7 @@ module ReadRuby
     end
 
     def to_s
-      "(#{signature_str}) => #{returns_str}"
+      "#{signature_str} => #{returns_str}"
     end
   end
 
