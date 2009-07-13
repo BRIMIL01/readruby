@@ -1,5 +1,9 @@
 module ReadRuby
   class Runner
+    # Specification files need the MSpec gem to be loadable, but RubySpec's
+    # spec_helper.rb doesn't require 'rubygems'.  
+    require 'rubygems'
+
     def self.reset!
       @@invocations = []
     end
