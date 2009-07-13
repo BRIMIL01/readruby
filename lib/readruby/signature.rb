@@ -47,14 +47,13 @@ module ReadRuby
     end
 
     def ok?
-      ok = [:returns, :signature].all? do |method|
+      [:returns, :signature].all? do |method|
         begin
           send(method)
         rescue NameError
           false
         end
-      end
-      ok and unique_paramaters?
+      end and unique_paramaters?
     end
 
     def unique_paramaters?
