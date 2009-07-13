@@ -8,6 +8,10 @@ module ReadRuby
     # captured portion than delegate both tasks to the regex
     SIGNATURE_REX = /^\s{4}\s*\(([^\)]*)\)\s*=> \s*(#{CLASS_PAT}.*)$/o
 
+    def self.signature?(line)
+      !!line.match(SIGNATURE_REX)
+    end
+
     attr_accessor :description
 
     def initialize(description)
@@ -50,18 +54,8 @@ module ReadRuby
       self.returns.join(' or ')
     end
 
-    def format(object, method)
-      raise ArgumentError unless object.is_a?(Class)
-      raise ArgumentError unless method.is_a?(Symbol)
-      str = "    #{object}##{method}("
-      str << self.signature_str
-      str << ') => '
-      str << self.returns_str
-      str
-    end
-
-    def description_sans_metadata
-      self.description.split(/\n/).reject {|l| l =~ SIGNATURE_REX }.join("\n")
+    def to_s
+      "(#{signature_str}) => #{returns_str}"
     end
   end
 end

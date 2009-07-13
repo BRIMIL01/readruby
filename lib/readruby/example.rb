@@ -3,7 +3,12 @@ module ReadRuby
   require 'pp'
 
   class Example
-    
+     EXAMPLE_REX = /^\s{4}\s*.+ #\s*=>/
+
+    def self.example?(line)
+      !!line.match(EXAMPLE_REX)
+    end
+
     def initialize(example)
       @given, @expected = example.split(/\s*#=>\s*/)
     end

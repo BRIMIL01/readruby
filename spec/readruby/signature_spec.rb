@@ -169,47 +169,21 @@ describe ReadRuby::Signature, "#signature" do
   end
 end
 
-describe ReadRuby::Signature, "#format" do
-  it "requires a Class as the first argument" do
-    lambda do
-      ReadRuby::Signature.new('text').format(String, :size)
-    end.should_not raise_error(ArgumentError)
-
-    lambda do
-      ReadRuby::Signature.new('text').format('', :size)
-    end.should raise_error(ArgumentError)
-  end
-
-  it "requires a Symbol as the second argument" do
-    lambda do
-      ReadRuby::Signature.new('text').format(String, :size)
-    end.should_not raise_error(ArgumentError)
-
-    lambda do
-      ReadRuby::Signature.new('text').format(String, 0)
-    end.should raise_error(ArgumentError)
+describe ReadRuby::Signature, "#to_s" do
+  before(:each) do
+    @string_slice = ReadRuby::Signature.new(
+      '    (Fixnum index) => String or NilClass').to_s
   end
 
   it "returns a String" do
-    ReadRuby::Signature.new('text').format(String, :size).should 
-      be_an_instance_of(String)
-  end
-
-  it "includes the Class name" do
-    ReadRuby::Signature.new('text').format(String, :size).should =~ /\WString\W/
-  end 
-
-  it "includes the method name" do
-    ReadRuby::Signature.new('text').format(String, :size).should =~ /\Wsize\W/
+    @string_slice.should be_an_instance_of(String)
   end
 
  it "includes the signature" do
-    ReadRuby::Signature.new('    (Fixnum index, String other) => String').
-      format(String, :insert).should =~ /\(Fixnum index, String other\)/
+    @string_slice.should =~ /Fixnum index/
  end
 
  it "includes the return value" do
-    ReadRuby::Signature.new('    (Fixnum index, String other) => String').
-      format(String, :insert).should =~ / => String/
+   @string_slice.should =~ /String or NilClass/
  end
 end 

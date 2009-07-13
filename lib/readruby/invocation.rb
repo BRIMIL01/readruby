@@ -1,30 +1,56 @@
 module ReadRuby
   class Invocation
     
-    attr_accessor :object, :method
+    attr_accessor :object, :method, :text
 
-    def initialize(object, method, description)
-      @object, @method, @description = object, method, description
+    def initialize(object, method, text)
+      @object, @method, @text = object, method, text
       raise ArgumentError unless @object.is_a?(Class)
       raise ArgumentError unless @method.is_a?(Symbol)
-      raise ArgumentError unless @description.is_a?(String)
+      raise ArgumentError unless @text.is_a?(String)
       raise NoMethodError, "#{object}##{method}" unless valid_method?
     end
 
+    def parse
+      @parsed ||= text.split("\n").map do |line|
+          if Signature.signature? line
+            Signature.new line
+          elsif Example.example? line
+            Example.new line
+          else
+            line
+        end
+      end
+    end
+
+    def validate
+      parse.each do |line|
+        if line.respond_to?(:ok?)
+          line.ok? or raise SyntaxError, line
+        end
+      end
+      unless parse.one? {|l| l.is_a? Signature }
+        raise SyntaxError, "Description does not have exactly one signature"
+      end
+    end
+
     def description
-      Description.new(signature_object.description_sans_metadata)
+      lines_of(String)
     end
 
     def signature
-      signature_object.signature
+      lines_of(Signature).first
     end
 
-    def returns
-      signature_object.returns
+    def examples
+      lines_of(Example)
     end
 
     def to_s
-      signature_object.format(self.object, self.method) + self.description.text
+      s = "    #{object}##{method}#{signature.to_s}\n"
+      s << description.join unless description.empty?
+      s << examples.map{|e| "    #{e.to_s}"}.join unless examples.empty?
+      s
     end
 
     private
@@ -36,8 +62,8 @@ module ReadRuby
       self.object.singleton_methods.any? {|m| m.to_sym == self.method }
     end
 
-    def signature_object
-      @signature_obj ||= Signature.new(@description)
+    def lines_of(klass)
+      self.parse.select {|line| line.is_a? klass }
     end
   end
 end

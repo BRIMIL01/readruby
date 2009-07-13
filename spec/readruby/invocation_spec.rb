@@ -76,34 +76,36 @@ describe ReadRuby::Invocation, "#method" do
 end
 
 # TODO it_behaves_like
-describe ReadRuby::Invocation, "#returns" do
-  it "returns an Array object" do
-    ReadRuby::Invocation.new(
-      Array, :first, '    () => Object or NilClass'
-    ).returns.should be_an_instance_of(Array)
-  end
-end
-
-# TODO it_behaves_like
 describe ReadRuby::Invocation, "#signature" do
-  it "returns an Array object" do
+  it "returns a Signature object" do
     ReadRuby::Invocation.new(
       Array, :at, '    (Fixnum index) => Object or NilClass'
-                            ).signature.should be_an_instance_of(Array)
+                            ).signature.should be_an_instance_of(Signature)
   end
+
+  it "returns the correct Signature object"
 end
 
-describe ReadRuby::Invocation, "#idescription" do
-  it "returns a Description object" do
+describe ReadRuby::Invocation, "#description" do
+  it "returns an Array" do
     ReadRuby::Invocation.new(Array, :first, 'text').description.should 
-      be_an_instance_of(Description)
+      be_an_instance_of(Array)
   end
 
-  it "returns the right Description object" do
+  it "returns an Array of Strings" do
     ReadRuby::Invocation.new(
-      Array, :first, 'text'
-    ).description.text.should == 'text'
+      Array, :first, "Line 1\nLine 2"
+    ).description.all? { |line| line.should be_an_instance_of(String) }
   end
+
+  it "sets each element to the corresponding line of the description" do
+    ReadRuby::Invocation.new(
+      Array, :first, "Line 1\nLine 2"
+    ).description.should == ['Line 1', 'Line 2']
+  end
+
+  it "doesn't return the signature"
+  it "doesn't return examples"
 end
 
 describe ReadRuby::Invocation, "#to_s" do
