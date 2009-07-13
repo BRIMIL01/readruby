@@ -4,7 +4,7 @@ module ReadRuby
     attr_accessor :object, :method, :text
 
     def initialize(object, method, text)
-      @object, @method, @text = object, method, text
+      @object, @method, @text = object, method, text.dup
       raise ArgumentError unless @object.is_a?(Class)
       raise ArgumentError unless @method.is_a?(Symbol)
       raise ArgumentError unless @text.is_a?(String)
