@@ -3,10 +3,11 @@ module ReadRuby
     # Matches a class name, e.g. String or NilClass
     CLASS_PAT = '([A-Z]\w+)'
     VAR_PAT = '([a-z0-9_]\w+)'
+    BLOCK_PAT = '\{[^\}]+\}'
     # Matches the method signature. We are intentionally vague about the
     # return type declaration because it's more readable to use #scan on the
     # captured portion than delegate both tasks to the regex
-    SIGNATURE_REX = /^\s{4}\s*\(([^\)]*)\)\s*=> \s*(#{CLASS_PAT}.*)$/o
+    SIGNATURE_REX = /^\s{4}\s*\(([^\)]*)\)\s*(#{BLOCK_PAT})?\s*=> \s*(#{CLASS_PAT}.*)$/o
 
     def self.signature?(line)
       !!line.match(SIGNATURE_REX)
@@ -21,8 +22,8 @@ module ReadRuby
 
     def signature
       return @signature if defined?(@signature)
-      match = self.description.split(/\n/)[0][SIGNATURE_REX, 1] or return [[]]
-      sig = match.scan(/#{CLASS_PAT}( #{VAR_PAT})?/o).map do |type, variable|
+      match = self.description.split(/\n/)[0].match(SIGNATURE_REX) or return [[]]
+      sig = match[1].scan(/#{CLASS_PAT}( #{VAR_PAT})?/o).map do |type, variable|
         begin
           type = Object.const_get(type.to_sym)
         rescue NameError
@@ -30,12 +31,13 @@ module ReadRuby
         end
         variable.nil? ? [type] : [type, variable.strip.to_sym]
       end
+      sig << [match[2]] if !match[2].nil? && match[3]
       @signature = sig.empty? ? [[]] : sig
     end
 
     def returns
       return @returns if defined?(@returns)
-      match = self.description.split(/\n/)[0][SIGNATURE_REX, 2] or return []
+      match = self.description.split(/\n/)[0][SIGNATURE_REX, 3] or return []
       @returns = match.scan(/#{CLASS_PAT}/o).map do |type|
         type = type.first
         begin

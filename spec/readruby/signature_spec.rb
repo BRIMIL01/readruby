@@ -167,6 +167,19 @@ describe ReadRuby::Signature, "#signature" do
         '    (Integer, Filed file) => Hash Object').signature
     end.should raise_error(NameError)
   end
+
+  it "accepts signatures with block arguments" do
+    lambda do
+      ReadRuby::Signature.new(
+        '    (Integer, File file) { |var| } => Hash Object').signature
+    end.should_not raise_error
+  end
+
+  it "sets the last element of the Array to the signature block argument" do
+      ReadRuby::Signature.new(
+        '    (Integer, File file) { |var| } => Hash Object'
+      ).signature.last.should == ['{ |var| }']
+  end
 end
 
 describe ReadRuby::Signature, "#to_s" do
