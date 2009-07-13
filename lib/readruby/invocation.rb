@@ -9,6 +9,12 @@ module ReadRuby
       raise ArgumentError unless @method.is_a?(Symbol)
       raise ArgumentError unless @text.is_a?(String)
       raise NoMethodError, "#{object}##{method}" unless valid_method?
+      preprocess
+    end
+
+    def preprocess
+      text.gsub!(/@method/, method.to_s)
+      text.gsub!(/@object/, object.to_s)
     end
 
     def parse

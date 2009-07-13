@@ -104,6 +104,18 @@ describe ReadRuby::Invocation, "#description" do
     ).description.should == ['Line 1', 'Line 2']
   end
 
+  it "has @method placeholders replaced with the name of the method" do
+    ReadRuby::Invocation.new(
+      Array, :first, " @method \nLine 2"
+    ).description.should == [' first ', 'Line 2']
+  end
+
+  it "has @object placeholders replaced with the name of the object" do
+    ReadRuby::Invocation.new(
+      Array, :first, " @object \nLine 2"
+    ).description.should == [' Array ', 'Line 2']
+  end
+
   it "doesn't return the signature"
   it "doesn't return examples"
 end
@@ -148,4 +160,69 @@ describe ReadRuby::Invocation, "#to_s" do
 
     invoc.to_s.should =~ / _other_ before the character /
  end
+end
+
+describe ReadRuby::Invocation, "#preprocess" do
+  it "has @method placeholders replaced with the name of the method" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, " @method \nLine 2"
+    )
+    invoc.preprocess
+    invoc.description.should == [' first ', 'Line 2']
+  end
+
+  it "has @object placeholders replaced with the name of the object" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, " @object \nLine 2"
+    )
+    invoc.preprocess
+    invoc.description.should == [' Array ', 'Line 2']
+  end
+  
+  it "will replace the same placeholder multiple times per line if necessary" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, " @method @method\nLine 2"
+    )
+    invoc.preprocess
+    invoc.description.should == [' first first', 'Line 2']
+  end
+
+  it "works with both kinds of placeholders in the same description" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, " @object\#@method \nLine 2"
+    )
+    invoc.preprocess
+    invoc.description.should == [' Array#first ', 'Line 2']
+  end
+
+  it "works with signatures" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, "    (Fixnum) => @object"
+    )
+    invoc.preprocess
+    invoc.signature.to_s.should =~ /\(Fixnum\) => Array/
+  end
+
+  it "works with examples" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, "    [1,2,3].@method(2) #=> [1,2]"
+    )
+    invoc.preprocess
+    invoc.examples.join.to_s.should include('[1,2,3].first(2)')
+  end
+
+  it "works if there are no placeholders to replace" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, "Line 1\nLine 2"
+    )
+    lambda { invoc.preprocess }.should_not raise_error
+    invoc.description.should == ['Line 1', 'Line 2']
+  end
+
+  it "is called automatically by the constructor" do
+    invoc = ReadRuby::Invocation.new(
+      Array, :first, " @object \nLine 2"
+    )
+    invoc.description.should == [' Array ', 'Line 2']
+  end
 end
