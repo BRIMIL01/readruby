@@ -9,8 +9,11 @@ module ReadRuby
       !!line.match(EXAMPLE_REX)
     end
 
+    attr_reader :example
+
     def initialize(example)
-      @given, @expected = example.split(/\s*#=>\s*/)
+      @example = example
+      @given, @expected = @example.split(/\s*#=>\s*/)
     end
 
     def actual
@@ -27,6 +30,10 @@ module ReadRuby
 
     def ok?
       self.expected == self.actual
+    end
+
+    def to_s
+      (' ' * 4) + example.lstrip
     end
 
     private

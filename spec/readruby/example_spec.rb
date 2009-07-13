@@ -81,3 +81,17 @@ describe ReadRuby::Example, "#ok?" do
     ReadRuby::Example.new('1 + 2 #=> 4').ok?.should be_false
   end
 end
+
+describe ReadRuby::Example, "#to_s" do
+  it "returns a String" do
+    ReadRuby::Example.new('1 + 2 #=> 3').to_s.should be_an_instance_of(String)
+  end
+
+  it "returns the constructor argument" do
+    ReadRuby::Example.new('    1 + 2 #=> 3').to_s.should == '    1 + 2 #=> 3'
+  end
+
+  it "pads the example with leading spaces if needed" do
+    ReadRuby::Example.new('1 + 2 #=> 3').to_s.should == '    1 + 2 #=> 3'
+  end
+end
