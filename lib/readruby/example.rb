@@ -36,9 +36,19 @@ module ReadRuby
       (' ' * 4) + example.lstrip
     end
 
+    def error
+      InvalidExampleError.new self
+    end
+
     private
     def pretty_eval(string)
       eval(string).pretty_inspect.strip.chomp
+    end
+  end
+  
+  class InvalidExampleError < Exception
+    def initialize(example)
+      super "<<#{example.example}>>: got #{example.actual}; expected #{example.expected}"
     end
   end
 end

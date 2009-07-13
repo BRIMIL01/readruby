@@ -32,7 +32,7 @@ module ReadRuby
     def validate
       parse.each do |line|
         if line.respond_to?(:ok?)
-          line.ok? or raise SyntaxError, line
+          line.ok? or raise line.error
         end
       end
       unless parse.one? {|l| l.is_a? Signature }
