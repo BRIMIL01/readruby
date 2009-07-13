@@ -23,7 +23,8 @@ module ReadRuby
 
     def self.display_all
       fetch.each do |invocation|
-        puts invocation
+        puts
+        puts Formatter.new(invocation).text
       end
     end
 
