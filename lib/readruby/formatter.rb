@@ -13,7 +13,7 @@ module ReadRuby
     end
 
     def text
-      txt = "#{invoc.object}##{invoc.method}#{invoc.signature.to_s}"
+      txt = "    #{invoc.object}##{invoc.method}#{invoc.signature.to_s}"
       txt << "\n#{invoc.description.join}" unless invoc.description.empty?
       unless invoc.examples.empty?
         txt << <<-examples
