@@ -208,6 +208,12 @@ describe ReadRuby::Signature, "#ok?" do
     ).ok?.should be_false
   end
 
+  it "returns false if the signature contains duplicate paramater names" do
+    ReadRuby::Signature.new(
+      '    (Fixnum index, String index) => String or NilClass'
+    ).ok?.should be_false
+  end
+
   it "returns true if the return contains only valid constants" do
     ReadRuby::Signature.new(
       '    (Fixnum index) => String or NilClass'

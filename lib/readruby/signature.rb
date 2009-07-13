@@ -45,13 +45,19 @@ module ReadRuby
     end
 
     def ok?
-      [:returns, :signature].all? do |method|
+      ok = [:returns, :signature].all? do |method|
         begin
           send(method)
         rescue NameError
           false
         end
       end
+      ok and unique_paramaters?
+    end
+
+    def unique_paramaters?
+      params = signature.map {|e| e.last}
+      params == params.uniq
     end
 
     def signature_str
