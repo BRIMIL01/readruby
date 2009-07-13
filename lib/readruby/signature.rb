@@ -75,4 +75,10 @@ module ReadRuby
       "(#{signature_str}) => #{returns_str}"
     end
   end
+
+  class InvalidSignatureError < Exception
+    def initialize(signature)
+      super signature.to_s
+    end
+  end
 end
