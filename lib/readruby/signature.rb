@@ -44,6 +44,16 @@ module ReadRuby
       end
     end
 
+    def ok?
+      [:returns, :signature].all? do |method|
+        begin
+          send(method)
+        rescue NameError
+          false
+        end
+      end
+    end
+
     def signature_str
       self.signature.map do |element|
         element.size == 2 ? element.join(' ') : element.first

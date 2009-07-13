@@ -187,3 +187,42 @@ describe ReadRuby::Signature, "#to_s" do
    @string_slice.should =~ /String or NilClass/
  end
 end 
+
+describe ReadRuby::Signature, "#ok?" do
+
+  it "returns true if the signature contains only valid constants" do
+    ReadRuby::Signature.new(
+      '    (Fixnum index) => String'
+    ).ok?.should be_true
+  end
+
+  it "returns true if the signature is empty" do
+    ReadRuby::Signature.new(
+      '    () => String'
+    ).ok?.should be_true
+  end
+
+  it "returns false if the signature contains invalid constants" do
+    ReadRuby::Signature.new(
+      '    (FixUp index) => String'
+    ).ok?.should be_false
+  end
+
+  it "returns true if the return contains only valid constants" do
+    ReadRuby::Signature.new(
+      '    (Fixnum index) => String or NilClass'
+    ).ok?.should be_true
+  end
+
+  it "returns false if the return contains invalid constants" do
+    ReadRuby::Signature.new(
+      '    (Fixnum index) => String or Nilz'
+    ).ok?.should be_false
+  end
+
+  it "returns false if the return and the signature contain invalid constants" do
+    ReadRuby::Signature.new(
+      '    (Fixnumz index) => String or Nilz'
+    ).ok?.should be_false
+  end
+end 
