@@ -19,13 +19,25 @@ module ReadRuby
     end
 
     def parse
-      @parsed ||= text.split("\n").map do |line|
-          if Signature.signature? line
-            Signature.new line
-          elsif Example.example? line
-            Example.new line
-          else
-            line
+      return @parsed if defined? @parsed
+      buffer = []
+      @parsed = text.split("\n").map do |line|
+        line.chomp!
+        if line =~ /\\$/
+          buffer << line.sub(/\\$/,'')
+          next
+        end
+
+        buffer << line
+        line = buffer.join("\n")
+        buffer = []
+
+        if Signature.signature? line
+          Signature.new line
+        elsif Example.example? line
+          Example.new line
+        else
+          line
         end
       end
     end

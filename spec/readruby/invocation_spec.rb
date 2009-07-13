@@ -226,3 +226,38 @@ describe ReadRuby::Invocation, "#preprocess" do
     invoc.description.should == [' Array ', 'Line 2']
   end
 end
+
+describe ReadRuby::Invocation, "#parse" do
+  before(:all) do
+    @invocation = ReadRuby::Invocation.new(
+      String, :include?, <<-text)
+          (String) => true or false
+
+      Line 1
+
+          'what'.include?('hat') #=> true
+          what = 'Shibboleth'           \\
+          what.include?('leth')  #=> true
+      text
+  end
+  it "returns an Array" do
+    @invocation.parse.should be_an_instance_of(Array)
+  end
+
+  it "coerces the signature into a Signature object" do
+    @invocation.parse.first.should be_an_instance_of(ReadRuby::Signature)
+  end
+
+  it "returns description lines as String elements" do
+    @invocation.parse[2].should be_an_instance_of(String)
+  end
+
+  it "coerces example lines into Example objects" do
+    @invocation.parse[4].should be_an_instance_of(ReadRuby::Example)
+  end
+
+  it "treats lines ending in '\' as part of the next line" do
+    @invocation.parse.last.should be_an_instance_of(ReadRuby::Example)
+    @invocation.parse.last.ok?.should be_true
+  end
+end
