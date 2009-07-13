@@ -20,6 +20,7 @@ module ReadRuby
     end
 
     def signature
+      return @signature if defined?(@signature)
       match = self.description.split(/\n/)[0][SIGNATURE_REX, 1] or return [[]]
       sig = match.scan(/#{CLASS_PAT}( #{VAR_PAT})?/o).map do |type, variable|
         begin
@@ -29,12 +30,13 @@ module ReadRuby
         end
         variable.nil? ? [type] : [type, variable.strip.to_sym]
       end
-      sig.empty? ? [[]] : sig
+      @signature = sig.empty? ? [[]] : sig
     end
 
     def returns
+      return @returns if defined?(@returns)
       match = self.description.split(/\n/)[0][SIGNATURE_REX, 2] or return []
-      match.scan(/#{CLASS_PAT}/o).map do |type|
+      @returns = match.scan(/#{CLASS_PAT}/o).map do |type|
         type = type.first
         begin
           Object.const_get(type.to_sym)
